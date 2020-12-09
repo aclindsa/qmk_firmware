@@ -1,8 +1,8 @@
 #pragma once
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID       0xDEAD
-#define PRODUCT_ID      0xBEEA
+#define VENDOR_ID       0xFEED
+#define PRODUCT_ID      0xBA00
 #define DEVICE_VER      0x0001
 #define MANUFACTURER KoBuss
 #define PRODUCT Squash
