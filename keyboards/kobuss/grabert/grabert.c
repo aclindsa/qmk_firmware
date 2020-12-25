@@ -36,7 +36,6 @@ void oled_task_user(void) {
         /* turning the keyboard on */
         oled_write_raw(kobuss_logo, OLED_MATRIX_SIZE);
     } else if (gol_update_count < GOL_UPDATE_MAX_COUNT) {
-
         if (gol_update_count % GOL_EVOLVE_PERIOD_MOD == 0) {
             for (size_t i = 0; i < OLED_DISPLAY_WIDTH; i++) {
                 for (size_t j = 0; j < OLED_DISPLAY_HEIGHT; j++) {
@@ -86,31 +85,18 @@ void oled_task_user(void) {
         }
 
         /* Set Layer (Currently only supports 0-3 layers) */
-        uint8_t lay = 0;
-        lay         = lay | layer_state_is(0) << 0;
-        lay         = lay | layer_state_is(1) << 1;
-        lay         = lay | layer_state_is(2) << 2;
-        lay         = lay | layer_state_is(3) << 3;
-
         const char* layer_glyph;
-
-        switch (lay) {
-            case 0b0001:
-                layer_glyph = layer_num_0;
-                break;
-            case 0b0010:
-                layer_glyph = layer_num_1;
-                break;
-            case 0b0100:
-                layer_glyph = layer_num_2;
-                break;
-            case 0b1000:
-                layer_glyph = layer_num_3;
-                break;
-
-            default:
-                layer_glyph = layer_num_0;
-                break;
+        /* Check the highest possible layer first */
+        if (layer_state_is(0b0100)) {
+            layer_glyph = layer_num_3;
+        } else if (layer_state_is(0b0010)) {
+            layer_glyph = layer_num_2;
+        } else if (layer_state_is(0b0001)) {
+            layer_glyph = layer_num_1;
+        } else if (layer_state_is(0b0000)) {
+            layer_glyph = layer_num_0;
+        } else {
+            layer_glyph = layer_nan;
         }
 
         for (size_t i = 0; i < LAYER_ROWS_BYTES; i++) {
@@ -121,8 +107,7 @@ void oled_task_user(void) {
     }
 }
 
-
-/* 
+/*
  * John Conway's Game of Life
  * https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
  * C implementation inspired by:
