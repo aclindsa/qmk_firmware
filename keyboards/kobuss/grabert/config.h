@@ -33,7 +33,7 @@
     { D3, D7, B9, E4, F10, C3, A1, A7, B1, E10, E15, B15, D11, D15, NO_PIN }, \
     { D5, B8, E3, F9, C2, A0, A3, C4, B2, E11, B10, D8, D12, NO_PIN, NO_PIN }, \
     { D6, B5, E2, C13, C1, F3, A4, A6, C5, E7, E12, B11, D9, D13, NO_PIN }, \
-    { B4, E1, E6, A5, E8, E13, B12, B13, D14, NO_PIN, NO_PIN, NO_PIN, NO_PIN, NO_PIN, C8 } \
+    { B4, E1, E6, A5, E8, E13, B12, B13, D14, C8, NO_PIN, NO_PIN, NO_PIN, NO_PIN, NO_PIN } \
 }
 
 #define DEBOUNCE 5
