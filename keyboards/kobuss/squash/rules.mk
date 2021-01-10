@@ -7,3 +7,4 @@ CUSTOM_MATRIX = no      # Custom matrix file
 ENCODER_ENABLE = yes
 EXTRAKEY_ENABLE = yes
 OLED_DRIVER_ENABLE = yes # If no display is plugged in and CONSOLE_ENABLE = yes, the firware gets stuck
+WPM_ENABLE = yes
