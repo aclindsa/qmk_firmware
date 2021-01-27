@@ -65,3 +65,8 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
 }
 #endif
+
+#ifdef COMBO_ENABLE
+const uint16_t PROGMEM escape_combo[] = {KC_LCTRL, KC_LBRACKET, COMBO_END};
+combo_t key_combos[COMBO_COUNT] = {COMBO(escape_combo, KC_ESC)};
+#endif /* COMBO_ENABLE */

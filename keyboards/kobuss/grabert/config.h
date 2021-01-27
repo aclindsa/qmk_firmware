@@ -66,3 +66,7 @@
 #    define OLED_UPDATE_INTERVAL 20
 #    define OLED_TIMEOUT 30000
 #endif
+
+#ifdef COMBO_ENABLE
+#    define COMBO_COUNT 1
+#endif
