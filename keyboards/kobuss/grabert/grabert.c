@@ -87,7 +87,7 @@ void oled_task_user(void) {
         /* Set Layer (Currently only supports 0-3 layers) */
         const char* layer_glyph;
         /* Check the highest possible layer first */
-        if (layer_state_is(0b0100)) {
+        if (layer_state_is(0b0011)) {
             layer_glyph = layer_num_3;
         } else if (layer_state_is(0b0010)) {
             layer_glyph = layer_num_2;
