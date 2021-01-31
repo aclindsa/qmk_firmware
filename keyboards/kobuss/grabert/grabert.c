@@ -16,6 +16,7 @@
 
 #include "grabert.h"
 
+#ifdef OLED_DRIVER_ENABLE
 static uint32_t oled_timer                       = 0;
 static uint8_t  gol_state[GOL_WIDTH][GOL_HEIGHT] = {0};
 static uint32_t gol_update_count                 = 0;
@@ -51,8 +52,13 @@ void oled_task_user(void) {
         oled_write_raw(screen_outline, OLED_MATRIX_SIZE);
         gol_update_count++;
     } else {
-        /* Set WPM rate */
-        uint8_t wpm  = get_current_wpm();
+/* Set WPM rate */
+#    ifdef WPM_ENABLE
+        uint8_t wpm = get_current_wpm();
+#    else
+        uint8_t wpm = 0;
+#    endif
+
         uint8_t bars = 0;
         if (wpm > SPEED_MAX_BARS_WPM) {
             bars = SPEED_NUM_BARS;
@@ -151,3 +157,4 @@ void gol_randomize(void) {
         }
     }
 }
+#endif
