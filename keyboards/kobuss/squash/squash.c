@@ -16,19 +16,23 @@
 
 #include "squash.h"
 
+#ifdef OLED_DRIVER_ENABLE
 static uint32_t oled_timer                       = 0;
 static uint8_t  gol_state[GOL_WIDTH][GOL_HEIGHT] = {0};
 static uint32_t gol_update_count                 = 0;
+#endif
 
 void keyboard_pre_init_user(void) {
     setPinOutput(INDICATOR_TOP_LED_PIN);
     setPinOutput(INDICATOR_MID_LED_PIN);
     setPinOutput(INDICATOR_BOT_LED_PIN);
 
-    gol_randomize(); 
+#ifdef OLED_DRIVER_ENABLE
+    gol_randomize();
+#endif
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) { return true; }
+bool process_record_user(uint16_t keycode, keyrecord_t* record) { return true; }
 
 bool led_update_kb(led_t led_state) {
     bool res = led_update_user(led_state);
@@ -55,6 +59,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return state;
 }
 
+#ifdef OLED_DRIVER_ENABLE
 void suspend_power_down_user(void) { oled_off(); }
 
 void suspend_wakeup_init_user(void) {
@@ -85,7 +90,11 @@ void oled_task_user(void) {
         gol_update_count++;
     } else {
         /* Set WPM rate */
-        uint8_t wpm  = get_current_wpm();
+#    ifdef WPM_ENABLE
+        uint8_t wpm = get_current_wpm();
+#    else
+        uint8_t wpm = 0;
+#    endif
         uint8_t bars = 0;
         if (wpm > SPEED_MAX_BARS_WPM) {
             bars = SPEED_NUM_BARS;
@@ -184,3 +193,4 @@ void gol_randomize(void) {
         }
     }
 }
+#endif
