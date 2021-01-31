@@ -36,7 +36,7 @@
 
 #ifdef OLED_DRIVER_ENABLE
 #    define LOGO_TIMEOUT_MS 3000
-#    define GOL_MAX_ITERATIONS 60
+#    define GOL_MAX_ITERATIONS 140
 #    define GOL_EVOLVE_PERIOD_MS 120
 
 #    define SPEED_MAX_BARS_WPM 144
@@ -56,7 +56,7 @@
 #    define GOL_UPDATE_MAX_COUNT (GOL_MAX_ITERATIONS * GOL_EVOLVE_PERIOD_MOD)
 
 void gol_play_game(void);
-void gol_randomize(void);
+void gol_initialize(void);
 
 // clang-format off
 static const char kobuss_logo [OLED_MATRIX_SIZE] = {
