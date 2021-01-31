@@ -21,14 +21,14 @@ static uint32_t oled_timer                       = 0;
 static uint8_t  gol_state[GOL_WIDTH][GOL_HEIGHT] = {0};
 static uint32_t gol_update_count                 = 0;
 
-void keyboard_pre_init_user(void) { gol_randomize(); }
+void keyboard_pre_init_user(void) { gol_initialize(); }
 
 void suspend_power_down_user(void) { oled_off(); }
 
 void suspend_wakeup_init_user(void) {
     oled_timer       = timer_read32();
     gol_update_count = 0;
-    gol_randomize();
+    gol_initialize();
 }
 
 void oled_task_user(void) {
@@ -149,11 +149,13 @@ void gol_play_game(void) {
     }
 }
 
-void gol_randomize(void) {
-    for (size_t i = 0; i < (GOL_WIDTH); i++) {
-        uint32_t rn = rand();
+void gol_initialize(void) {
+    for (size_t i = 0; i < GOL_WIDTH; i++) {
         for (size_t j = 0; j < GOL_HEIGHT; j++) {
-            gol_state[i][j] = (rn >> j) & 0x01;
+            size_t large_matrix_row = j * GOL_SQUARE_SIZE / 8;
+            size_t matrix_row = j * GOL_SQUARE_SIZE % 8;
+            size_t matrix_col = i * GOL_SQUARE_SIZE;
+            gol_state[i][j] = (kobuss_logo[large_matrix_row * OLED_DISPLAY_WIDTH + matrix_col] >> matrix_row) & 0x1;
         }
     }
 }
