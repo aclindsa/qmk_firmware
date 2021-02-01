@@ -8,6 +8,7 @@ ENCODER_ENABLE = yes
 EXTRAKEY_ENABLE = yes
 OLED_DRIVER_ENABLE = yes
 WPM_ENABLE = yes
+RAW_ENABLE = yes
 
 # Enable low-power on idle thread
 OPT_DEFS += -DCORTEX_ENABLE_WFI_IDLE=TRUE

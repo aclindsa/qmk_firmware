@@ -15,11 +15,19 @@
  */
 
 #include "grabert.h"
+#include "raw_hid.h"
 
 #ifdef OLED_DRIVER_ENABLE
 static uint32_t oled_timer                       = 0;
 static uint8_t  gol_state[GOL_WIDTH][GOL_HEIGHT] = {0};
 static uint32_t gol_update_count                 = 0;
+
+static uint32_t hid_invert_text = false;
+static uint32_t hid_update_count = UINT32_MAX;
+static uint32_t hid_update_max = 5000 / OLED_UPDATE_INTERVAL; // 5 seconds
+static char hid_message[128] = {0};
+static char *hid_message_ptr = hid_message;
+static bool hid_updated = false;
 
 void keyboard_pre_init_user(void) { gol_initialize(); }
 
@@ -48,9 +56,28 @@ void oled_task_user(void) {
         }
         gol_update_count++;
 
-    } else if (gol_update_count == GOL_UPDATE_MAX_COUNT) {
+    } else if (hid_update_count < hid_update_max) {
+        hid_update_count++;
+
+        if (hid_updated) {
+            oled_clear();
+
+            // (re-)write buffer to screen
+            for (size_t i = 0; i < 84; i++) {
+                char c = hid_message[i];
+                if (c == '\n')
+                    oled_advance_page(true);
+                else if (c == 0)
+                    break;
+                else
+                    oled_write_char(c, hid_invert_text);
+            }
+            hid_updated = false;
+        }
+    } else if (gol_update_count == GOL_UPDATE_MAX_COUNT || hid_update_count == hid_update_max) {
         oled_write_raw(screen_outline, OLED_MATRIX_SIZE);
-        gol_update_count++;
+        gol_update_count = GOL_UPDATE_MAX_COUNT + 1;
+        hid_update_count = UINT32_MAX;
     } else {
 /* Set WPM rate */
 #    ifdef WPM_ENABLE
@@ -159,4 +186,50 @@ void gol_initialize(void) {
         }
     }
 }
-#endif
+
+#if defined(RAW_ENABLE) && !defined(VIA_ENABLE)
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+
+    // Echo received command back for debugging
+    raw_hid_send(data, length);
+
+    if (length < 2) {
+        return;
+    }
+
+    hid_updated = true;
+
+    switch (data[0]) {
+    case ID_SET_MESSAGE_TIMEOUT:
+        // set lifetime of messages in seconds
+        hid_update_max = ((uint32_t)data[1] * 1000) / OLED_UPDATE_INTERVAL;
+        break;
+    case ID_SET_INVERT_TEXT:
+        // Set whether the text is inverted
+        hid_invert_text = data[1];
+        break;
+    case ID_START_MESSAGE:
+    case ID_APPEND_MESSAGE:
+        // clear buffer and write characters
+        if (data[0] == ID_START_MESSAGE || hid_update_count > hid_update_max) {
+            hid_message_ptr = hid_message;
+            hid_update_count = 0;
+        }
+
+        // copy message to buffer
+        for (size_t i = 1; i < length; i++) {
+            char c = (char)data[i];
+            if (!c)
+                break;
+            *hid_message_ptr = (char)data[i];
+            hid_message_ptr++;
+            if (hid_message_ptr - hid_message > 84)
+                break;
+        }
+        *hid_message_ptr = 0;
+        break;
+    }
+}
+#endif /* if defined(RAW_ENABLE) && !defined(VIA_ENABLE) */
+
+#endif /* OLED_DRIVER_ENABLE */

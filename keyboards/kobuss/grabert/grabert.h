@@ -194,3 +194,14 @@ static const char layer_nan [] = {
 };
 // clang-format on
 #endif
+
+#ifdef RAW_ENABLE
+// Must be synced to grabert.py
+enum grabert_command_id {
+	/* 0x01-0x13, 0xFF are used by VIA as of now */
+	ID_SET_MESSAGE_TIMEOUT = 0xB0,
+	ID_SET_INVERT_TEXT     = 0xB1,
+	ID_START_MESSAGE       = 0xB2,
+	ID_APPEND_MESSAGE      = 0xB3,
+};
+#endif /* RAW_ENABLE */
